@@ -1,17 +1,31 @@
 import {Request, Response} from "express";
 import Task from "../models/tasks.model";
 import paginationHelper from "../../../helpers/pagination";
+import searchHelper from "../../../helpers/search";
 
 export const index =  async (req: Request, res: Response) => {
+    interface Find {
+        deleted: boolean;
+        status?: string;
+        title?: RegExp;
+    }
     // Find
-    const find = {
+    const find:Find = {
         deleted: false,
     }
 
     if (req.query.status) {
-        find['status'] = req.query.status;
+        find.status = req.query.status.toString();
     }
     // End find
+
+    // Search
+    let objectSearch = searchHelper(req.query);
+
+    if (req.query.keyword) {
+        find.title = objectSearch.regex
+    }
+    // End Search
 
     // Sort
     const sort = {}
